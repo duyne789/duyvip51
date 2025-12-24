@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Random Email Ảo Theo Tên + Số</title>
+<style>
+body { font-family: Arial; text-align: center; margin-top: 40px; }
+input { padding: 10px; width: 380px; font-size: 16px; }
+button { padding: 10px 16px; font-size: 15px; cursor: pointer; margin: 5px; }
+ul { list-style: none; padding: 0; max-width: 460px; margin: 20px auto; text-align: left; }
+li { background: #f2f2f2; margin: 4px 0; padding: 6px 10px; border-radius: 6px; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<h2>Random Email Ảo Theo Tên + Số</h2>
+
+<input id="email" readonly>
+<br><br>
+
+<button onclick="generate()">Random</button>
+<button onclick="copyEmail()">Copy</button>
+<button onclick="exportList()">Xuất file</button>
+
+<h3>Email đã tạo</h3>
+<ul id="list"></ul>
+
+<script>
+const ho = ["Nguyễn","Trần","Lê","Phạm","Hoàng","Huỳnh","Phan","Vũ","Võ","Đặng","Bùi","Đỗ"];
+const ten = ["An","Anh","Bình","Chi","Dũng","Đạt","Hà","Hải","Hạnh","Hòa","Hùng","Khánh","Linh","Long","Minh","Nam","Ngọc","Phúc","Quân","Sơn","Trang","Tuấn","Vy","Yến"];
+
+function boDau(str) {
+  return str.normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/đ/g, "d").replace(/Đ/g, "d")
+            .toLowerCase();
+}
+
+function randomSo() {
+  return Math.floor(Math.random() * 900 + 100); // 100–999
+}
+
+function generate() {
+  const h = ho[Math.floor(Math.random() * ho.length)];
+  const t = ten[Math.floor(Math.random() * ten.length)];
+  const so = randomSo();
+
+  const email = boDau(h + t) + so + "@gmail.com";
+
+  document.getElementById('email').value = email;
+
+  const li = document.createElement('li');
+  li.textContent = email;
+  document.getElementById('list').prepend(li);
+}
+
+function copyEmail() {
+  const email = document.getElementById('email').value;
+  if (!email) return alert("Chưa có email!");
+  navigator.clipboard.writeText(email);
+  alert("Đã copy: " + email);
+}
+
+function exportList() {
+  const items = document.querySelectorAll('#list li');
+  if (items.length === 0) return alert("Danh sách trống!");
+
+  let text = "";
+  items.forEach(i => text += i.textContent + "\n");
+
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = "email_theo_ten_so.txt";
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+generate();
+</script>
+
+</body>
+</html>
